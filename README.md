@@ -1,28 +1,44 @@
 # Cursor Agent Factory
 
-> Build production-ready Cursor agents in **5 minutes** instead of 8 hours
+> Automate the creation of production-ready Cursor AI agents — from idea to fully benchmarked agent in under 5 minutes.
 
-## The Problem
+---
 
-Creating specialized Cursor agents requires:
-- Researching domain best practices (2–3 hours)
-- Writing `.cursorrules` manually (3–4 hours)
-- Creating test suites (1–2 hours)
-- Benchmarking performance (1 hour)
+## What Is This?
 
-**Total: 7–10 hours per agent**
+**Cursor Agent Factory** is a Python-based automation tool that generates, tests, benchmarks, and packages custom AI agents for the [Cursor](https://cursor.sh) code editor.
 
-For AI-native companies building multiple agents, this doesn't scale.
+Instead of manually spending 7–10 hours writing `.cursorrules` files, designing test cases, and measuring performance, this tool does all of it automatically — you just describe what you want in plain English.
 
-## The Solution
+---
 
-Cursor Agent Factory automates the entire process:
+## The Problem It Solves
+
+Building a high-quality Cursor agent manually requires:
+
+| Task | Time |
+| ---- | ---- |
+| Research domain best practices | 2–3 hours |
+| Write `.cursorrules` by hand | 3–4 hours |
+| Design test cases | 1–2 hours |
+| Benchmark against baseline | 1 hour |
+| **Total** | **7–10 hours per agent** |
+
+For teams building multiple specialized agents, this becomes a serious bottleneck.
+
+---
+
+## How It Works
+
+One command does everything:
 
 ```bash
-$ python -m src.main --create "security agent for Python"
+python -m src.main --create "security agent for Python"
+```
 
-🔍 Analyzing requirements...
-🤖 Generating .cursorrules with Claude...
+```text
+🔍 Analyzing requirements: 'security agent for Python'
+🤖 Generating .cursorrules...
 ✅ Rules generated (52 lines)
 🧪 Creating test suite...
 ✅ 20 test cases created
@@ -32,108 +48,189 @@ $ python -m src.main --create "security agent for Python"
    Improvement      : +44.6%
    Score            : 9300/10,000
 📦 Packaging agent...
-
 ✅ Agent ready at: outputs/security-agent-for-python/
-   .cursorrules, tests/, benchmarks.json, README.md
 ⏱️  Total time: 4m 37s
 ```
 
+### Under the Hood
+
+1. **Requirement Analysis** — Parses your natural language description to understand the agent's domain and goals
+2. **Rule Generation** — Calls an LLM to write an optimized `.cursorrules` file with roles, mandatory checks, heuristics, and examples
+3. **Test Suite Builder** — Auto-generates 20 test cases across positive, negative, and edge case scenarios
+4. **Benchmark Engine** — Scores the custom agent against the default Cursor baseline on a 1–10,000 scale
+5. **Packager** — Bundles `.cursorrules`, tests, benchmark data, and documentation into one ready-to-use directory
+
+---
+
+## Architecture
+
+The factory is a modular pipeline — each stage is independent and can be run separately.
+
+```text
+User Input (plain English description)
+         │
+         ▼
+┌─────────────────┐
+│   src/main.py   │  ← CLI + orchestrator
+└────────┬────────┘
+         │
+    ┌────┴──────────────────────────────────┐
+    │                                       │
+    ▼                                       ▼
+┌──────────────────┐           ┌───────────────────────┐
+│ agent_generator  │           │  test_suite_builder   │
+│                  │           │                       │
+│ LLM call         │           │ LLM call              │
+│ → .cursorrules   │           │ → 20 test cases       │
+└────────┬─────────┘           └──────────┬────────────┘
+         │                                │
+         └──────────────┬─────────────────┘
+                        │
+                        ▼
+           ┌────────────────────┐
+           │  benchmark_engine  │
+           │                    │
+           │ Runs each test case│
+           │ through the agent  │
+           │ → accuracy score   │
+           └──────────┬─────────┘
+                      │
+                      ▼
+           ┌────────────────────┐
+           │     packager       │
+           │                    │
+           │ Bundles all output │
+           │ → outputs/<name>/  │
+           └────────────────────┘
+```
+
+### Module Breakdown
+
+| Module | Responsibility |
+| ------ | -------------- |
+| `main.py` | CLI entry point, orchestrates the full pipeline |
+| `agent_generator.py` | Builds a domain-aware prompt and calls the LLM to produce `.cursorrules` |
+| `test_suite_builder.py` | Generates 20 typed test cases (8 positive, 8 negative, 4 edge) |
+| `benchmark_engine.py` | Evaluates each test case and scores on a 1–10,000 scale |
+| `llm_client.py` | Unified client supporting Anthropic, Gemini, and Ollama |
+| `packager.py` | Writes `.cursorrules`, test cases, benchmark JSON, and README to disk |
+
+---
+
+## Performance
+
+### Factory Self-Score: 9,450 / 10,000
+
+| Metric | Manual Process | Cursor Agent Factory | Default Cursor |
+| ------ | -------------- | -------------------- | -------------- |
+| Creation time | 7 hours | **5 minutes** | N/A |
+| Accuracy | 79% | **94%** | 65% |
+| Consistency | Variable | **Standardized** | Variable |
+| Speed improvement | 1× | **89×** | N/A |
+
+---
+
+## Tech Stack
+
+- **Language**: Python 3.12
+- **LLM Providers**: Anthropic Claude, Google Gemini, Ollama (local & cloud)
+- **Testing**: pytest
+- **Key Libraries**: `anthropic`, `openai`, `python-dotenv`
+- **Architecture**: Modular pipeline — generator → test builder → benchmark engine → packager
+
+---
+
 ## Quick Start
 
-### Installation
+### 1. Clone & Install
+
 ```bash
 git clone https://github.com/yourusername/cursor-agent-factory
 cd cursor-agent-factory
 pip install -r requirements.txt
-cp .env.example .env
-# Choose a provider (see below) and edit .env
 ```
 
-### Provider: Anthropic Claude (default)
+### 2. Configure Your LLM Provider
+
+Copy the example environment file and fill in your credentials:
 
 ```bash
-# .env
+cp .env.example .env
+```
+
+#### Option A — Google Gemini (recommended, free tier available)
+
+```env
+LLM_PROVIDER=gemini
+GEMINI_API_KEY=AIza...
+GEMINI_MODEL=gemini-3.1-flash-lite
+```
+
+#### Option B — Anthropic Claude
+
+```env
 LLM_PROVIDER=anthropic
 ANTHROPIC_API_KEY=sk-ant-...
 ```
 
-### Provider: Ollama (local, no API key needed)
+#### Option C — Ollama (fully local, no API key needed)
 
-```bash
-# 1. Install Ollama: https://ollama.com
-# 2. Pull a model
-ollama pull llama3.2
-
-# 3. .env
+```env
 LLM_PROVIDER=ollama
 OLLAMA_BASE_URL=http://localhost:11434/v1
 OLLAMA_MODEL=llama3.2
 ```
 
-### Usage
+### 3. Generate Your First Agent
+
 ```bash
-# Generate an agent
+# Create a new agent from a description
 python -m src.main --create "React component builder following Airbnb style guide"
 
 # Benchmark an existing agent
 python -m src.main --benchmark outputs/react-component-builder
 
-# Self-improve (meta!)
+# Run the factory's self-improvement loop
 python -m src.main --self-improve
 ```
 
-## Examples
+---
 
-See `examples/` for pre-generated agents:
-- **security-agent**: Finds SQL injection, XSS, hardcoded secrets in Python
-- **react-component-agent**: Enforces Airbnb React standards
-- **api-testing-agent**: Generates comprehensive API test suites
+## Example Agents
 
-Each includes `.cursorrules`, test cases, benchmark data, and documentation.
+Three pre-built agents are included in `examples/` to demonstrate output quality:
 
-## Performance
+| Agent | What It Does |
+| ----- | ------------ |
+| `security-agent` | Detects SQL injection, XSS, and hardcoded secrets in Python |
+| `react-component-agent` | Enforces Airbnb React/JSX coding standards |
+| `api-testing-agent` | Generates comprehensive API test suites |
 
-**Factory Self-Score: 9,450/10,000**
+Each comes with `.cursorrules`, test cases, benchmark results, and a README.
 
-| Metric | Manual | Factory | Default Cursor |
-|--------|--------|---------|----------------|
-| Creation time | 7 hrs | **5 min** | N/A |
-| Accuracy | 79% | **94%** | 65% |
-| Consistency | Variable | **Standardized** | Variable |
-| Speedup | 1x | **89x** | N/A |
+---
 
-See `docs/SCORING_METHODOLOGY.md` for detailed breakdown.
+## Project Structure
 
-## How It Works
+```text
+cursor-agent-factory/
+├── src/
+│   ├── main.py                 # CLI entry point
+│   ├── agent_generator.py      # LLM-powered .cursorrules generation
+│   ├── test_suite_builder.py   # Automated test case generation
+│   ├── benchmark_engine.py     # Performance scoring (1–10,000 scale)
+│   ├── llm_client.py           # Unified multi-provider LLM client
+│   ├── packager.py             # Output bundler
+│   └── templates/              # Base file templates
+├── examples/                   # 3 pre-generated sample agents
+├── tests/                      # Unit + integration test suite
+├── benchmarks/                 # Baseline & comparison data
+├── docs/                       # Architecture, scoring methodology, proof
+├── .env.example                # Environment variable template
+└── .cursorrules                # Meta: rules the factory uses on itself
+```
 
-1. **Input**: Natural language agent description
-2. **Generation**: Claude Sonnet creates optimized `.cursorrules`
-3. **Testing**: Auto-generates 20 test cases (positive, negative, edge)
-4. **Benchmarking**: Claude Haiku evaluates each case vs default Cursor baseline
-5. **Packaging**: Bundles everything into a ready-to-use agent directory
-
-Architecture: `docs/ARCHITECTURE.md`
-
-## The Meta Twist
-
-This factory built itself through recursive self-improvement:
-- v0: Manually coded (8 hours)
-- v1: Generated by v0 (added test builder + benchmark engine)
-- v2: Generated by v1 (current — self-improvement loop, packaging system)
-
-Full story: `docs/RECURSIVE_PROOF.md`
-
-## Quest Requirements Checklist
-
-| # | Requirement | Fulfilled |
-|---|-------------|-----------|
-| 1 | Agent on GitHub | ✅ This repo |
-| 2 | Cursor-ready setup | ✅ `.cursorrules` included |
-| 3 | No secrets | ✅ `.env.example`, `.gitignore` |
-| 4 | Performance metrics | ✅ 9,450/10,000 (`docs/SCORING_METHODOLOGY.md`) |
-| 5 | Benchmark comparison | ✅ `docs/BENCHMARK_RESULTS.md` |
-| 6 | Problem specialization | ✅ Agent creation bottleneck automated |
-| 7 | Documentation | ✅ Comprehensive (`docs/`) |
+---
 
 ## Running Tests
 
@@ -141,36 +238,38 @@ Full story: `docs/RECURSIVE_PROOF.md`
 # Full test suite (no API key required)
 pytest tests/ -v
 
-# Quick check
+# Core unit tests only
 pytest tests/test_generator.py tests/test_benchmark.py -v
 
-# Integration tests (verifies example agents)
+# Integration tests — verifies example agents are valid
 pytest tests/integration_test.py -v
 ```
 
-## Project Structure
+---
 
-```
-cursor-agent-factory/
-├── .cursorrules                # Meta: rules for building the factory
-├── .env.example                # ANTHROPIC_API_KEY template
-├── src/
-│   ├── main.py                 # CLI entry point
-│   ├── agent_generator.py      # Generates .cursorrules via Claude
-│   ├── test_suite_builder.py   # Auto-creates 20 test cases
-│   ├── benchmark_engine.py     # Scores custom vs default (1-10,000)
-│   ├── packager.py             # Bundles output files
-│   └── templates/              # Base templates
-├── examples/                   # 3 pre-generated sample agents
-├── benchmarks/                 # Baseline + comparison data
-├── tests/                      # Unit + integration tests
-├── docs/                       # Full documentation
-└── scripts/                    # Demo + submission helpers
-```
+## The Meta Twist
 
-## Author
+This factory built itself through recursive self-improvement:
 
-Built for MUST's quest-based hiring process.
+- **v0** — Hand-coded from scratch (8 hours)
+- **v1** — Generated by v0, added the test builder and benchmark engine
+- **v2** — Generated by v1, added self-improvement loop and packaging system (current)
+
+Full write-up: [`docs/RECURSIVE_PROOF.md`](docs/RECURSIVE_PROOF.md)
+
+---
+
+## Documentation
+
+| Document | Description |
+| -------- | ----------- |
+| [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) | System design and component overview |
+| [`docs/SCORING_METHODOLOGY.md`](docs/SCORING_METHODOLOGY.md) | How the 1–10,000 benchmark score is calculated |
+| [`docs/BENCHMARK_RESULTS.md`](docs/BENCHMARK_RESULTS.md) | Detailed performance comparison data |
+| [`docs/USER_GUIDE.md`](docs/USER_GUIDE.md) | End-to-end usage walkthrough |
+| [`docs/RECURSIVE_PROOF.md`](docs/RECURSIVE_PROOF.md) | Story of the self-improvement process |
+
+---
 
 ## License
 
