@@ -167,11 +167,3 @@ cursor-agent-factory/
 ├── docs/                       # Full documentation
 └── scripts/                    # Demo + submission helpers
 ```
-
-## Author
-
-Built for MUST's quest-based hiring process.
-
-## License
-
-MIT
