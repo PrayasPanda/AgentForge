@@ -1,0 +1,23 @@
+{
+  "custom_accuracy": 0.95,
+  "custom_precision": 0.9231,
+  "custom_recall": 1.0,
+  "default_accuracy": 0.65,
+  "improvement_ratio": 0.4615,
+  "improvement_percent": 46.2,
+  "performance_score": 8900,
+  "component_scores": {
+    "generation_quality": 2700,
+    "benchmark_performance": 2400,
+    "time_efficiency": 1950,
+    "cursor_integration": 1500,
+    "innovation": 350,
+    "total": 8900
+  },
+  "test_cases_run": 20,
+  "correct": 19,
+  "true_positives": 12,
+  "false_positives": 1,
+  "false_negatives": 0,
+  "elapsed_seconds": 253.1
+}

@@ -1,0 +1,22 @@
+[
+  {"code": "cursor.execute('SELECT * FROM users WHERE id = %s', (user_id,))", "expected_result": "pass", "reason": "Parameterized query prevents SQL injection", "category": "positive"},
+  {"code": "API_KEY = os.environ.get('STRIPE_KEY')", "expected_result": "pass", "reason": "Secret loaded from environment, not hardcoded", "category": "positive"},
+  {"code": "hashed = bcrypt.hashpw(password.encode(), bcrypt.gensalt())", "expected_result": "pass", "reason": "bcrypt is a secure password hashing algorithm", "category": "positive"},
+  {"code": "html.escape(user_input)", "expected_result": "pass", "reason": "User input is escaped before rendering", "category": "positive"},
+  {"code": "requests.get(url, verify=True)", "expected_result": "pass", "reason": "SSL verification is enabled", "category": "positive"},
+  {"code": "with open(os.path.basename(filename)) as f: data = f.read()", "expected_result": "pass", "reason": "basename strips path traversal attempts", "category": "positive"},
+  {"code": "SECRET = os.getenv('JWT_SECRET', '')\nif not SECRET:\n    raise ValueError('JWT_SECRET required')", "expected_result": "pass", "reason": "Secret from env with validation", "category": "positive"},
+  {"code": "cursor.execute('SELECT * FROM products WHERE category = ?', (category,))", "expected_result": "pass", "reason": "SQLite parameterized query is safe", "category": "positive"},
+  {"code": "query = f\"SELECT * FROM users WHERE id = {user_id}\"", "expected_result": "fail", "reason": "SQL injection via f-string interpolation", "category": "negative"},
+  {"code": "STRIPE_KEY = 'sk_live_abc123xyz'", "expected_result": "fail", "reason": "Hardcoded production API key", "category": "negative"},
+  {"code": "hashed = hashlib.md5(password.encode()).hexdigest()", "expected_result": "fail", "reason": "MD5 is cryptographically broken for passwords", "category": "negative"},
+  {"code": "result = eval(user_input)", "expected_result": "fail", "reason": "eval() with user input is remote code execution", "category": "negative"},
+  {"code": "data = pickle.loads(request.body)", "expected_result": "fail", "reason": "Deserializing untrusted pickle data allows code execution", "category": "negative"},
+  {"code": "requests.get(url, verify=False)", "expected_result": "fail", "reason": "Disabled SSL verification allows MITM attacks", "category": "negative"},
+  {"code": "with open('/data/' + filename) as f: pass", "expected_result": "fail", "reason": "Path traversal: filename could be '../../etc/passwd'", "category": "negative"},
+  {"code": "PASSWORD = 'admin123'", "expected_result": "fail", "reason": "Hardcoded password in source code", "category": "negative"},
+  {"code": "cursor.execute('SELECT * FROM users WHERE name = %s', (name,))\n# name comes from trusted internal system", "expected_result": "pass", "reason": "Parameterized even for internal data — correct defense in depth", "category": "edge"},
+  {"code": "SECRET = os.environ.get('KEY', 'default-dev-key')", "expected_result": "fail", "reason": "Default fallback is a hardcoded secret, dangerous in prod", "category": "edge"},
+  {"code": "import subprocess\nsubprocess.run(['ls', user_path])", "expected_result": "fail", "reason": "User-controlled path in subprocess can be exploited", "category": "edge"},
+  {"code": "token = request.headers.get('Authorization', '').replace('Bearer ', '')", "expected_result": "pass", "reason": "Extracting token from header is safe; no secret hardcoded", "category": "edge"}
+]

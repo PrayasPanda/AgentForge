@@ -1,0 +1,22 @@
+[
+  {"code": "interface Props { name: string; }\nexport const Greeting: React.FC<Props> = ({ name }) => <h1>Hello {name}</h1>;", "expected_result": "pass", "reason": "Typed functional component with named export", "category": "positive"},
+  {"code": "useEffect(() => {\n  const sub = api.subscribe(handler);\n  return () => sub.unsubscribe();\n}, [api]);", "expected_result": "pass", "reason": "useEffect with proper cleanup function", "category": "positive"},
+  {"code": "{users.map((u) => <UserCard key={u.id} user={u} />)}", "expected_result": "pass", "reason": "Stable keys using unique IDs", "category": "positive"},
+  {"code": "const Button = ({ label, onClick }: { label: string; onClick: () => void }) => (\n  <button onClick={onClick}>{label}</button>\n);", "expected_result": "pass", "reason": "Inline TypeScript types are acceptable for simple props", "category": "positive"},
+  {"code": "import styles from './Card.module.css';\nexport const Card = ({ title }: { title: string }) => (\n  <div className={styles.card}>{title}</div>\n);", "expected_result": "pass", "reason": "CSS modules for styling — correct pattern", "category": "positive"},
+  {"code": "const [count, setCount] = useState(0);\nconst doubled = useMemo(() => count * 2, [count]);", "expected_result": "pass", "reason": "Hooks at top level with proper dependencies", "category": "positive"},
+  {"code": "export const List = ({ items }: { items: { id: string; name: string }[] }) => (\n  <ul>{items.map(i => <li key={i.id}>{i.name}</li>)}</ul>\n);", "expected_result": "pass", "reason": "Typed list component with stable keys", "category": "positive"},
+  {"code": "const ref = useRef<HTMLDivElement>(null);\nuseEffect(() => { ref.current?.focus(); }, []);", "expected_result": "pass", "reason": "DOM access via ref — correct approach", "category": "positive"},
+  {"code": "class MyComponent extends React.Component {\n  render() { return <div>{this.props.name}</div>; }\n}", "expected_result": "fail", "reason": "Class component when functional component is preferred", "category": "negative"},
+  {"code": "if (isLoggedIn) {\n  const [user, setUser] = useState(null);\n}", "expected_result": "fail", "reason": "Hook called inside conditional — violates rules of hooks", "category": "negative"},
+  {"code": "{items.map((item, index) => <Item key={index} data={item} />)}", "expected_result": "fail", "reason": "Array index as key breaks reconciliation for dynamic lists", "category": "negative"},
+  {"code": "const MyComp = ({ label }) => <button style={{ color: 'red', margin: '10px' }}>{label}</button>;", "expected_result": "fail", "reason": "Inline styles should use CSS modules or styled-components", "category": "negative"},
+  {"code": "export default function Header() { return <h1>Hello</h1>; }", "expected_result": "fail", "reason": "Default export in shared component; named export preferred", "category": "negative"},
+  {"code": "useEffect(() => {\n  const timer = setInterval(tick, 1000);\n  // no cleanup\n}, []);", "expected_result": "fail", "reason": "Missing clearInterval cleanup causes memory leak", "category": "negative"},
+  {"code": "document.getElementById('root').innerHTML = '<b>hi</b>';", "expected_result": "fail", "reason": "Direct DOM manipulation bypasses React rendering", "category": "negative"},
+  {"code": "const Comp = ({ items }) => <ul>{items.map(i => <li>{i}</li>)}</ul>;", "expected_result": "fail", "reason": "Missing keys in mapped list and no prop types", "category": "negative"},
+  {"code": "export const Tabs = ({ tabs }: { tabs: string[] }) => (\n  <div>{tabs.map((t, i) => <Tab key={i} label={t} />)}</div>\n);", "expected_result": "fail", "reason": "Static-looking list but still uses index — tabs could be reordered", "category": "edge"},
+  {"code": "const fetchData = async () => { const res = await api.get('/data'); setData(res); };\nuseEffect(() => { fetchData(); }, []);", "expected_result": "fail", "reason": "Async function in useEffect without abort controller or cleanup", "category": "edge"},
+  {"code": "interface Props { children: React.ReactNode; }\nexport const Layout: React.FC<Props> = ({ children }) => <main>{children}</main>;", "expected_result": "pass", "reason": "Wrapper/layout component with typed children — valid pattern", "category": "edge"},
+  {"code": "const memoized = useMemo(() => expensiveCalc(data), []);\n// data not in deps", "expected_result": "fail", "reason": "Stale closure: data used in memo but missing from dependency array", "category": "edge"}
+]

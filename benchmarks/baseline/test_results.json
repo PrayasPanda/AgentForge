@@ -1,0 +1,43 @@
+{
+  "description": "Default Cursor AI performance without custom .cursorrules",
+  "methodology": "50 real-world code samples evaluated per agent domain; Cursor used with no custom rules",
+  "date": "2026-05-16",
+  "agents_tested": [
+    {
+      "domain": "security",
+      "accuracy": 0.62,
+      "precision": 0.55,
+      "recall": 0.68,
+      "vulnerabilities_caught": 31,
+      "total_vulnerabilities": 50,
+      "false_positives": 8,
+      "notes": "Default Cursor catches obvious SQL injection but misses hardcoded secrets and weak hashing"
+    },
+    {
+      "domain": "react-components",
+      "accuracy": 0.65,
+      "precision": 0.60,
+      "recall": 0.70,
+      "standards_enforced": 13,
+      "total_standards": 20,
+      "false_positives": 5,
+      "notes": "Default Cursor suggests functional components but misses hook rules and key stability issues"
+    },
+    {
+      "domain": "api-testing",
+      "accuracy": 0.67,
+      "precision": 0.62,
+      "recall": 0.72,
+      "coverage_score": 0.78,
+      "edge_cases_caught": 9,
+      "total_edge_cases": 20,
+      "notes": "Default Cursor generates happy path tests but misses auth edge cases and boundary conditions"
+    }
+  ],
+  "aggregate": {
+    "mean_accuracy": 0.6467,
+    "mean_precision": 0.59,
+    "mean_recall": 0.70,
+    "time_per_agent_hours": 7.5
+  }
+}
